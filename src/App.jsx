@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import "./App.css";
 
 export default function App() {
   const today = new Date();
@@ -138,162 +139,48 @@ export default function App() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#f4f4f4",
-        padding: "30px",
-        fontFamily: "Arial",
-      }}
-    >
-    <div
-      style={{
-        maxWidth: "1200px",
-        margin: "auto",
-        background:
-          "linear-gradient(to bottom right, #ffffff, #f0f4ff)",
-        borderRadius: "25px",
-        padding: "30px",
-        boxShadow: "0px 10px 30px rgba(0,0,0,0.12)",
-        border: "1px solid #dbe4ff",
-      }}
-    >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-        <h1
-          style={{
-            fontSize: "48px",
-            margin: 0,
-            fontWeight: "bold",
-            color: "#111",
-            letterSpacing: "-1px",
-          }}
-        >
+    <div className="app">
+      <div className="container">
+        <div className="top-bar">
+          <h1 className="title">
             Expense Tracker
           </h1>
 
-          <div
-            style={{
-              display: "flex",
-              gap: "50px",
-            }}
-          >
-            <div>
-              <p
-                style={{
-                  color: "gray",
-                  margin: 0,
-                }}
-              >
-                Total Spent
-              </p>
-
-              <h2
-                style={{
-                  color: "red",
-                  margin: 0,
-                  fontSize: "36px",
-                }}
-              >
-                ₹{totalSpent}
-              </h2>
+          <div className="stats">
+            <div className="stat-card spent">
+              <p>Total Spent</p>
+              <h2>₹{totalSpent}</h2>
             </div>
 
-            <div>
-              <p
-                style={{
-                  color: "gray",
-                  margin: 0,
-                }}
-              >
-                No Spend Days
-              </p>
-
-              <h2
-                style={{
-                  color: "green",
-                  margin: 0,
-                  fontSize: "36px",
-                }}
-              >
-                {noSpendDays}
-              </h2>
+            <div className="stat-card nospend">
+              <p>No Spend Days</p>
+              <h2>{noSpendDays}</h2>
             </div>
           </div>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginTop: "40px",
-            marginBottom: "30px",
-          }}
-        >
+        <div className="month-navigation">
           <button
             onClick={previousMonth}
-            style={{
-              padding: "10px 18px",
-              borderRadius: "10px",
-              border: "1px solid #ddd",
-              backgroundColor: "#111",
-              cursor: "pointer",
-              fontSize: "20px",
-              color: "white",
-            }}
+            className="nav-button"
           >
             ←
           </button>
 
-          <h2
-            style={{
-              fontSize: "42px",
-              margin: 0,
-              fontWeight: "bold",
-              color: "#222",
-              backgroundColor: "#eef2ff",
-              padding: "10px 24px",
-              borderRadius: "14px",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
-            }}
-          >
-            {monthNames[currentMonth]} {currentYear}
+          <h2 className="month-title">
+            {monthNames[currentMonth]}{" "}
+            {currentYear}
           </h2>
 
           <button
             onClick={nextMonth}
-            style={{
-              padding: "10px 18px",
-              borderRadius: "10px",
-              border: "1px solid #ddd",
-              backgroundColor: "#111",
-              cursor: "pointer",
-              fontSize: "20px",
-              color: "white",
-            }}
+            className="nav-button"
           >
             →
           </button>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(7, 1fr)",
-            gap: "10px",
-            marginBottom: "10px",
-            textAlign: "center",
-            fontWeight: "bold",
-            color: "#666",
-          }}
-        >
+        <div className="weekdays">
           <div>Sun</div>
           <div>Mon</div>
           <div>Tue</div>
@@ -303,13 +190,7 @@ export default function App() {
           <div>Sat</div>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(7, 1fr)",
-            gap: "12px",
-          }}
-        >
+        <div className="calendar-grid">
           {Array.from({ length: firstDay }).map(
             (_, index) => (
               <div key={index}></div>
@@ -339,68 +220,35 @@ export default function App() {
             return (
               <div
                 key={day}
-                style={{
-                  minHeight: "140px",
-                  borderRadius: "18px",
-                  padding: "14px",
-                  backgroundColor: isNoSpend
-                    ? "#eef9ee"
-                    : "white",
-                  border: isNoSpend
-                    ? "2px solid #bde5bd"
-                    : "1px solid #e2e2e2",
-                  position: "relative",
-                }}
+                className={`day-card ${
+                  isNoSpend
+                    ? "no-spend-day"
+                    : ""
+                }`}
               >
-                <h3
-                  style={{
-                    margin: 0,
-                    fontSize: "24px",
-                  }}
-                >
+                <h3 className="day-number">
                   {day}
                 </h3>
 
                 {isNoSpend && (
-                  <div
-                    style={{
-                      color: "green",
-                      marginTop: "10px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    ✓ No Spend
+                  <div className="no-spend-text">
+                    ✓ No Spend Day
                   </div>
                 )}
 
                 {!isNoSpend &&
                   dateExpenses && (
-                    <div
-                      style={{
-                        marginTop: "10px",
-                      }}
-                    >
-                      <p
-                        style={{
-                          color: "red",
-                          fontWeight: "bold",
-                          fontSize: "22px",
-                          margin: 0,
-                        }}
-                      >
+                    <div className="expense-content">
+                      <p className="spent-amount">
                         ₹{spentAmount}
                       </p>
 
                       {dateExpenses
-                        .slice(0, 2)
+                        .slice(0, 3)
                         .map((expense) => (
                           <p
                             key={expense.id}
-                            style={{
-                              margin: "5px 0",
-                              fontSize: "14px",
-                              color: "#555",
-                            }}
+                            className="expense-reason"
                           >
                             • {expense.reason}
                           </p>
@@ -408,50 +256,23 @@ export default function App() {
                     </div>
                   )}
 
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: "12px",
-                    left: "12px",
-                    right: "12px",
-                    display: "flex",
-                    gap: "8px",
-                  }}
-                >
+                <div className="card-button-area">
                   <button
-                    onClick={() =>
-                      markNoSpendDay(day)
-                    }
-                    style={{
-                      flex: 1,
-                      padding: "8px",
-                      backgroundColor: "green",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                      fontSize: "12px",
-                    }}
-                  >
-                    No Spend
-                  </button>
+                    onClick={() => {
+                      const didSpend =
+                        window.confirm(
+                          "Press OK if you spent money today.\nPress Cancel for No Spend Day."
+                        );
 
-                  <button
-                    onClick={() =>
-                      openExpenseModal(day)
-                    }
-                    style={{
-                      flex: 1,
-                      padding: "8px",
-                      backgroundColor: "red",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "8px",
-                      cursor: "pointer",
-                      fontSize: "12px",
+                      if (didSpend) {
+                        openExpenseModal(day);
+                      } else {
+                        markNoSpendDay(day);
+                      }
                     }}
+                    className="update-button"
                   >
-                    Add Expense
+                    Update Day
                   </button>
                 </div>
               </div>
@@ -461,29 +282,11 @@ export default function App() {
       </div>
 
       {showModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor:
-              "rgba(0,0,0,0.5)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "white",
-              padding: "30px",
-              borderRadius: "20px",
-              width: "400px",
-            }}
-          >
-            <h2>Add Expense</h2>
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2 className="modal-title">
+              Add Expense
+            </h2>
 
             <input
               type="number"
@@ -494,14 +297,7 @@ export default function App() {
                   e.target.value
                 )
               }
-              style={{
-                width: "100%",
-                padding: "12px",
-                marginTop: "15px",
-                borderRadius: "10px",
-                border: "1px solid #ccc",
-                boxSizing: "border-box",
-              }}
+              className="modal-input"
             />
 
             <input
@@ -513,51 +309,22 @@ export default function App() {
                   e.target.value
                 )
               }
-              style={{
-                width: "100%",
-                padding: "12px",
-                marginTop: "15px",
-                borderRadius: "10px",
-                border: "1px solid #ccc",
-                boxSizing: "border-box",
-              }}
+              className="modal-input"
             />
 
-            <div
-              style={{
-                display: "flex",
-                gap: "10px",
-                marginTop: "20px",
-              }}
-            >
+            <div className="modal-buttons">
               <button
                 onClick={addExpense}
-                style={{
-                  flex: 1,
-                  padding: "12px",
-                  backgroundColor: "black",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "10px",
-                  cursor: "pointer",
-                }}
+                className="save-button"
               >
-                Save
+                Save Expense
               </button>
 
               <button
                 onClick={() =>
                   setShowModal(false)
                 }
-                style={{
-                  flex: 1,
-                  padding: "12px",
-                  backgroundColor: "#ddd",
-                  color: "black",
-                  border: "none",
-                  borderRadius: "10px",
-                  cursor: "pointer",
-                }}
+                className="cancel-button"
               >
                 Cancel
               </button>
