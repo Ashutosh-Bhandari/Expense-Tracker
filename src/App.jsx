@@ -1,5 +1,5 @@
-import { Analytics } from "@vercel/analytics/react";
 import { useState, useEffect } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import "./App.css";
 
 export default function App() {
@@ -21,92 +21,45 @@ export default function App() {
   const [expenseReason, setExpenseReason] = useState("");
 
   useEffect(() => {
-    localStorage.setItem(
-      "calendar-expenses",
-      JSON.stringify(expenses)
-    );
+    localStorage.setItem("calendar-expenses", JSON.stringify(expenses));
   }, [expenses]);
 
   const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January","February","March","April","May","June",
+    "July","August","September","October","November","December"
   ];
 
-  const daysInMonth = new Date(
-    currentYear,
-    currentMonth + 1,
-    0
-  ).getDate();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  const firstDay = new Date(
-    currentYear,
-    currentMonth,
-    1
-  ).getDay();
-
-  const totalSpent = Object.values(expenses)
-    .flat()
-    .reduce(
-      (total, item) => total + Number(item.amount),
-      0
-    );
-
-  const noSpendDays = Object.keys(expenses).filter(
-    (date) => expenses[date]?.length === 0
-  ).length;
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
 
   const generateDateKey = (day) => {
     return `${currentYear}-${currentMonth + 1}-${day}`;
   };
 
-  const markNoSpendDay = (day) => {
-    const key = generateDateKey(day);
+  // ✅ MONTH FILTERED TOTAL
+  const totalSpent = Object.entries(expenses)
+    .filter(([date]) => {
+      const [year, month] = date.split("-");
+      return (
+        Number(year) === currentYear &&
+        Number(month) === currentMonth + 1
+      );
+    })
+    .flatMap(([, value]) => value)
+    .reduce((total, item) => total + Number(item.amount), 0);
 
-    setExpenses({
-      ...expenses,
-      [key]: [],
-    });
-  };
-
-  const addExpense = () => {
-    if (
-      !expenseAmount ||
-      !expenseReason ||
-      !selectedDate
-    )
-      return;
-
-    const newExpense = {
-      id: Date.now(),
-      amount: expenseAmount,
-      reason: expenseReason,
-    };
-
-    const currentExpenses =
-      expenses[selectedDate] || [];
-
-    setExpenses({
-      ...expenses,
-      [selectedDate]: [
-        ...currentExpenses,
-        newExpense,
-      ],
-    });
-
-    setExpenseAmount("");
-    setExpenseReason("");
-    setShowModal(false);
-  };
+  // ✅ MONTH FILTERED NO-SPEND
+  const noSpendDays = Object.entries(expenses).filter(
+    ([date, value]) => {
+      const [year, month] = date.split("-");
+      return (
+        Number(year) === currentYear &&
+        Number(month) === currentMonth + 1 &&
+        value.length === 0
+      );
+    }
+  ).length;
 
   const getDateExpenses = (day) => {
     const key = generateDateKey(day);
@@ -115,10 +68,47 @@ export default function App() {
 
   const openExpenseModal = (day) => {
     const key = generateDateKey(day);
-
     setSelectedDate(key);
-
     setShowModal(true);
+  };
+
+  const addExpense = () => {
+    if (!expenseAmount || !expenseReason || !selectedDate) return;
+
+    const newExpense = {
+      id: Date.now(),
+      amount: expenseAmount,
+      reason: expenseReason,
+    };
+
+    const currentExpenses = expenses[selectedDate] || [];
+
+    setExpenses({
+      ...expenses,
+      [selectedDate]: [...currentExpenses, newExpense],
+    });
+
+    setExpenseAmount("");
+    setExpenseReason("");
+    setShowModal(false);
+  };
+
+  const markNoSpendFromModal = () => {
+    if (!selectedDate) return;
+
+    setExpenses({
+      ...expenses,
+      [selectedDate]: [],
+    });
+
+    setShowModal(false);
+  };
+
+  const deleteDay = (day) => {
+    const key = generateDateKey(day);
+    const updated = { ...expenses };
+    delete updated[key];
+    setExpenses(updated);
   };
 
   const previousMonth = () => {
@@ -142,14 +132,13 @@ export default function App() {
   return (
     <div className="app">
       <div className="container">
+
         <div className="top-bar">
-          <h1 className="title">
-            Expense Tracker
-          </h1>
+          <h1 className="title">Expense Tracker</h1>
 
           <div className="stats">
             <div className="stat-card spent">
-              <p>Total Spent</p>
+              <p>This Month</p>
               <h2>₹{totalSpent}</h2>
             </div>
 
@@ -161,59 +150,38 @@ export default function App() {
         </div>
 
         <div className="month-navigation">
-          <button
-            onClick={previousMonth}
-            className="nav-button"
-          >
-            ←
-          </button>
-
+          <button onClick={previousMonth} className="nav-button">←</button>
           <h2 className="month-title">
-            {monthNames[currentMonth]}{" "}
-            {currentYear}
+            {monthNames[currentMonth]} {currentYear}
           </h2>
-
-          <button
-            onClick={nextMonth}
-            className="nav-button"
-          >
-            →
-          </button>
+          <button onClick={nextMonth} className="nav-button">→</button>
         </div>
 
         <div className="weekdays">
-          <div>Sun</div>
-          <div>Mon</div>
-          <div>Tue</div>
-          <div>Wed</div>
-          <div>Thu</div>
-          <div>Fri</div>
-          <div>Sat</div>
+          <div>Sun</div><div>Mon</div><div>Tue</div>
+          <div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
         </div>
 
         <div className="calendar-grid">
-          {Array.from({ length: firstDay }).map(
-            (_, index) => (
-              <div key={index}></div>
-            )
-          )}
+          {Array.from({ length: firstDay }).map((_, i) => (
+            <div key={i}></div>
+          ))}
 
-          {Array.from({
-            length: daysInMonth,
-          }).map((_, index) => {
+          {Array.from({ length: daysInMonth }).map((_, index) => {
             const day = index + 1;
+            const dateExpenses = getDateExpenses(day);
 
-            const dateExpenses =
-              getDateExpenses(day);
+            const isFutureDate =
+              currentYear === today.getFullYear() &&
+              currentMonth === today.getMonth() &&
+              day > today.getDate();
 
             const isNoSpend =
-              dateExpenses &&
-              dateExpenses.length === 0;
+              dateExpenses && dateExpenses.length === 0;
 
             const spentAmount = dateExpenses
               ? dateExpenses.reduce(
-                  (total, item) =>
-                    total + Number(item.amount),
+                  (total, item) => total + Number(item.amount),
                   0
                 )
               : 0;
@@ -221,61 +189,37 @@ export default function App() {
             return (
               <div
                 key={day}
-                className={`day-card ${
-                  isNoSpend
-                    ? "no-spend-day"
-                    : ""
-                }`}
+                className={`day-card ${isNoSpend ? "no-spend-day" : ""}`}
+                onClick={() => !isFutureDate && openExpenseModal(day)}
               >
-                <h3 className="day-number">
-                  {day}
-                </h3>
+                <h3 className="day-number">{day}</h3>
 
-                {isNoSpend && (
-                  <div className="no-spend-text">
-                    ✓ No Spend Day
-                  </div>
+                {dateExpenses && (
+                  <button
+                    className="delete-day"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteDay(day);
+                    }}
+                  >
+                    🗑
+                  </button>
                 )}
 
-                {!isNoSpend &&
-                  dateExpenses && (
-                    <div className="expense-content">
-                      <p className="spent-amount">
-                        ₹{spentAmount}
+                {isNoSpend && (
+                  <div className="no-spend-text">✓ No Spend</div>
+                )}
+
+                {!isNoSpend && dateExpenses && (
+                  <div className="expense-content">
+                    <p className="spent-amount">₹{spentAmount}</p>
+                    {dateExpenses.slice(0, 2).map((e) => (
+                      <p key={e.id} className="expense-reason">
+                        • {e.reason}
                       </p>
-
-                      {dateExpenses
-                        .slice(0, 3)
-                        .map((expense) => (
-                          <p
-                            key={expense.id}
-                            className="expense-reason"
-                          >
-                            • {expense.reason}
-                          </p>
-                        ))}
-                    </div>
-                  )}
-
-                <div className="card-button-area">
-                  <button
-                    onClick={() => {
-                      const didSpend =
-                        window.confirm(
-                          "Press OK if you spent money today.\nPress Cancel for No Spend Day."
-                        );
-
-                      if (didSpend) {
-                        openExpenseModal(day);
-                      } else {
-                        markNoSpendDay(day);
-                      }
-                    }}
-                    className="update-button"
-                  >
-                    Update Day
-                  </button>
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -285,54 +229,32 @@ export default function App() {
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">
-            <h2 className="modal-title">
-              Add Expense
-            </h2>
+            <h2>Add Expense</h2>
 
             <input
               type="number"
               placeholder="Amount"
               value={expenseAmount}
-              onChange={(e) =>
-                setExpenseAmount(
-                  e.target.value
-                )
-              }
-              className="modal-input"
+              onChange={(e) => setExpenseAmount(e.target.value)}
             />
 
             <input
               type="text"
               placeholder="Reason"
               value={expenseReason}
-              onChange={(e) =>
-                setExpenseReason(
-                  e.target.value
-                )
-              }
-              className="modal-input"
+              onChange={(e) => setExpenseReason(e.target.value)}
             />
 
             <div className="modal-buttons">
-              <button
-                onClick={addExpense}
-                className="save-button"
-              >
-                Save Expense
-              </button>
-
-              <button
-                onClick={() =>
-                  setShowModal(false)
-                }
-                className="cancel-button"
-              >
-                Cancel
-              </button>
+              <button onClick={addExpense}>Save</button>
+              <button onClick={markNoSpendFromModal}>No Spend</button>
+              <button onClick={() => setShowModal(false)}>Cancel</button>
             </div>
           </div>
         </div>
       )}
+
+      {/* ✅ VERCEL ANALYTICS */}
       <Analytics />
     </div>
   );
