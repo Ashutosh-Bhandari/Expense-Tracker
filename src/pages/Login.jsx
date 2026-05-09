@@ -1,30 +1,34 @@
 import { useNavigate } from "react-router-dom";
-import { signInWithRedirect, signInWithPopup, onAuthStateChanged } from "firebase/auth";
+import {
+  signInWithRedirect,
+  signInWithPopup,
+} from "firebase/auth";
 import { auth, provider } from "../firebase";
 import { useEffect, useState } from "react";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigate("/app");
-      } else {
-        setLoading(false);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   const handleGoogleLogin = async () => {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     try {
-      if (isMobile) {
+      setLoading(true);
+      if (isIOS) {
+        // iOS Safari — use popup instead of redirect
+        const result = await signInWithPopup(auth, provider);
+        if (result && result.user) {
+          navigate("/app");
+        }
+      } else if (isMobile) {
         await signInWithRedirect(auth, provider);
       } else {
-        await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        if (result && result.user) {
+          navigate("/app");
+        }
       }
     } catch (error) {
       console.log(error);
@@ -42,7 +46,8 @@ export default function Login() {
         background: "linear-gradient(to bottom right, #f8faff, #eef3ff)",
       }}>
         <div style={{ textAlign: "center" }}>
-          <p style={{ fontSize: "18px", color: "#555", fontWeight: "600" }}>Loading...</p>
+          <p style={{ fontSize: "18px", color: "#555", fontWeight: "600" }}>Signing you in...</p>
+          <p style={{ fontSize: "13px", color: "#aaa", marginTop: "8px" }}>Please wait</p>
         </div>
       </div>
     );
