@@ -267,4 +267,20 @@ body {
   .modal {
     width: 90%;
   }
+
+.streak {
+  background: #fff7ed;
+}
+
+.streak h2 {
+  color: #ea580c;
+}
+
+.best-streak {
+  background: #eff6ff;
+}
+
+.best-streak h2 {
+  color: #2563eb;
+}
 }
