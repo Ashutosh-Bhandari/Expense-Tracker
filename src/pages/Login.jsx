@@ -10,14 +10,17 @@ export default function Login() {
   useEffect(() => {
     getRedirectResult(auth)
       .then((result) => {
+        console.log("Redirect result:", result);
         if (result && result.user) {
+          console.log("User found:", result.user);
           navigate("/app");
         } else {
+          console.log("No user found");
           setLoading(false);
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.log("Error:", error);
         setLoading(false);
       });
   }, []);
