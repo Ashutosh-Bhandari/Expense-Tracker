@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { signInWithRedirect, signInWithPopup, onAuthStateChanged } from "firebase/auth";
 import { auth, provider } from "../firebase";
 import { useEffect, useState } from "react";
 
@@ -8,32 +8,23 @@ export default function Login() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getRedirectResult(auth)
-      .then((result) => {
-        console.log("Redirect result:", result);
-        if (result && result.user) {
-          console.log("User found:", result.user);
-          navigate("/app");
-        } else {
-          console.log("No user found");
-          setLoading(false);
-        }
-      })
-      .catch((error) => {
-        console.log("Error:", error);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/app");
+      } else {
         setLoading(false);
-      });
+      }
+    });
+    return () => unsubscribe();
   }, []);
 
   const handleGoogleLogin = async () => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     try {
       if (isMobile) {
-        setLoading(true);
         await signInWithRedirect(auth, provider);
       } else {
         await signInWithPopup(auth, provider);
-        navigate("/app");
       }
     } catch (error) {
       console.log(error);
@@ -51,8 +42,7 @@ export default function Login() {
         background: "linear-gradient(to bottom right, #f8faff, #eef3ff)",
       }}>
         <div style={{ textAlign: "center" }}>
-          <p style={{ fontSize: "18px", color: "#555", fontWeight: "600" }}>Signing you in...</p>
-          <p style={{ fontSize: "13px", color: "#aaa", marginTop: "8px" }}>Please wait</p>
+          <p style={{ fontSize: "18px", color: "#555", fontWeight: "600" }}>Loading...</p>
         </div>
       </div>
     );
