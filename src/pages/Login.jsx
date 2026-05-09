@@ -1,24 +1,13 @@
 import { useNavigate } from "react-router-dom";
-
-import {
-  signInWithPopup,
-} from "firebase/auth";
-
-import {
-  auth,
-  provider,
-} from "../firebase";
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../firebase";
 
 export default function Login() {
   const navigate = useNavigate();
 
   const handleGoogleLogin = async () => {
     try {
-      await signInWithPopup(
-        auth,
-        provider
-      );
-
+      await signInWithPopup(auth, provider);
       navigate("/app");
     } catch (error) {
       console.log(error);
@@ -32,8 +21,7 @@ export default function Login() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        background:
-          "linear-gradient(to bottom right, #f8faff, #eef3ff)",
+        background: "linear-gradient(to bottom right, #f8faff, #eef3ff)",
         padding: "20px",
       }}
     >
@@ -42,10 +30,9 @@ export default function Login() {
           width: "100%",
           maxWidth: "420px",
           background: "white",
-          padding: "40px",
+          padding: "40px 30px",
           borderRadius: "28px",
-          boxShadow:
-            "0 10px 40px rgba(0,0,0,0.08)",
+          boxShadow: "0 10px 40px rgba(0,0,0,0.08)",
         }}
       >
         <div
@@ -56,10 +43,12 @@ export default function Login() {
         >
           <h1
             style={{
-              fontSize: "42px",
+              fontSize: "clamp(28px, 8vw, 42px)",
               fontWeight: "800",
               color: "#111",
               marginBottom: "10px",
+              lineHeight: "1.2",
+              whiteSpace: "nowrap",
             }}
           >
             Expense Tracker
@@ -68,7 +57,7 @@ export default function Login() {
           <p
             style={{
               color: "#666",
-              fontSize: "16px",
+              fontSize: "clamp(13px, 4vw, 16px)",
             }}
           >
             Track your spending habits beautifully
