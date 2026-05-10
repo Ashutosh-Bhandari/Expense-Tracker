@@ -1,25 +1,17 @@
 import { initializeApp } from "firebase/app";
-
-import {
-  getAuth,
-  GoogleAuthProvider,
-} from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBExHvhO8JMWMvlzysrivGgMZkkQfWf1PA",
-  authDomain: "expense-tracker-9b999.firebaseapp.com",
-  projectId: "expense-tracker-9b999",
-  storageBucket: "expense-tracker-9b999.firebasestorage.app",
-  messagingSenderId: "722275222806",
-  appId: "1:722275222806:web:e48a109a338fb18afafc37",
-  measurementId: "G-X2T1YLSGBN",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
-
 export const auth = getAuth(app);
-
-export const provider =
-  new GoogleAuthProvider();
-
+export const provider = new GoogleAuthProvider();
 export default app;
