@@ -1,35 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import {
-  signInWithRedirect,
-  signInWithPopup,
-} from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../firebase";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Login() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
-      if (isIOS) {
-        // iOS Safari — use popup instead of redirect
-        const result = await signInWithPopup(auth, provider);
-        if (result && result.user) {
-          navigate("/app");
-        }
-      } else if (isMobile) {
-        await signInWithRedirect(auth, provider);
-      } else {
-        const result = await signInWithPopup(auth, provider);
-        if (result && result.user) {
-          navigate("/app");
-        }
-      }
+      await signInWithPopup(auth, provider);
+      navigate("/app");
     } catch (error) {
       console.log(error);
       setLoading(false);
